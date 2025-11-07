@@ -38,11 +38,14 @@ ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
 ENV STREAMLIT_SERVER_HEADLESS=true
 ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
 
-# Copy application code and set permissions
+# Copy application code
 COPY src/ ./src/
 COPY docs/ ./docs/
-COPY .env.example ./
+COPY .env.example .env
 RUN chown -R app:app /app /home/app/.local
+
+# Create volume for environment file
+VOLUME /app/config
 
 # Switch to non-root user
 USER app

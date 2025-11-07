@@ -133,16 +133,80 @@ class AzureOpenAIService:
         """Check if the service is properly configured."""
         return bool(self.endpoint and self.api_key and self.api_url)
 
-# Global instance for use across the application
-def get_azure_openai_service():
-    """Get or create Azure OpenAI service instance."""
-    try:
-        service = AzureOpenAIService()
-        logger.info("Azure OpenAI service initialized successfully")
-        return service
-    except Exception as e:
-        logger.error(f"Failed to initialize Azure OpenAI service: {e}")
-        return None
+class ChatService:
+    """Service class for managing both Azure OpenAI and Local Chat API."""
 
-# Initialize the service
-azure_openai_service = get_azure_openai_service()
+    def __init__(self):
+        """Initialize the service based on environment variables."""
+        self.use_local_api = os.getenv("USE_LOCAL_API", "false").lower() == "true"
+
+        if self.use_local_api:
+            self.base_url = os.getenv("LOCAL_CHAT_API_BASE_URL")
+            self.endpoint = os.getenv("LOCAL_CHAT_API_ENDPOINT")
+            self.api_url = f"{self.base_url.rstrip('/')}{self.endpoint}"
+            logger.info(f"Using Local Chat API: {self.api_url}")
+        else:
+            self.azure_service = AzureOpenAIService()
+
+    def generate_response(self, user_message: str, conversation_history: Optional[list] = None) -> str:
+        """
+        Generate a response using the selected API.
+
+        Args:
+            user_message (str): The user's input message
+            conversation_history (list, optional): Previous conversation context
+
+        Returns:
+            str: Generated response
+        """
+        if self.use_local_api:
+            try:
+                # Format messages for the local API
+                messages = []
+                # Add conversation history if provided
+                if conversation_history:
+                    messages.extend([{
+                        "role": msg["role"],
+                        "content": msg["content"]
+                    } for msg in conversation_history])
+                
+                # Add current user message
+                messages.append({
+                    "role": "user",
+                    "content": user_message
+                })
+                
+                # Prepare payload for local API
+                payload = {
+                    "messages": messages
+                }
+                
+                logger.info(f"Sending request to local API with payload: {json.dumps(payload)}")
+                response = requests.post(
+                    self.api_url,
+                    headers={"Content-Type": "application/json"},
+                    json=payload,
+                    timeout=30
+                )
+                
+                if response.status_code == 200:
+                    response_data = response.json()
+                    logger.info(f"Received response from local API: {json.dumps(response_data)}")
+                    return response_data.get("response", "No response from local API.")
+                else:
+                    logger.error(f"Local API error: {response.status_code} - {response.text}")
+                    return f"Error communicating with the local API: {response.text}"
+            except Exception as e:
+                logger.error(f"Error using Local Chat API: {e}")
+                return "Technical difficulties with the local API."
+        else:
+            return self.azure_service.generate_response(user_message, conversation_history)
+
+    def is_configured(self) -> bool:
+        """Check if the service is properly configured."""
+        if self.use_local_api:
+            return bool(self.base_url and self.endpoint)
+        return self.azure_service.is_configured()
+
+# Global instance for use across the application
+chat_service = ChatService()

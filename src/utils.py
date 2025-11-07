@@ -16,7 +16,15 @@ def add_message(role: str, content: str):
         role (str): The role of the message sender ('user' or 'assistant')
         content (str): The message content
     """
-    st.session_state.messages.append({"role": role, "content": content})
+    # Ensure the role is one of the allowed values
+    allowed_roles = ['user', 'assistant', 'system']
+    if role not in allowed_roles:
+        raise ValueError(f"Role must be one of {allowed_roles}")
+    
+    st.session_state.messages.append({
+        "role": role,
+        "content": content
+    })
 
 def get_chat_history() -> List[Dict[str, str]]:
     """Get the chat history.
