@@ -46,17 +46,106 @@ A modern AI-powered chat interface built with Python and Streamlit, featuring fl
 
 ## Prerequisites
 
-- Python 3.8 or higher
-- Azure OpenAI resource with deployed model
-- Git (for cloning the repository)
+- Docker (for containerized deployment)
+- Python 3.11 or higher (for local development)
+- Azure OpenAI resource with deployed model (if using Azure OpenAI)
+- Local Chat API service (if using local API)
 
 ## 🚀 Quick Start
 
-### Option 1: Docker (Recommended for Production)
+### Option 1: Docker (Recommended)
 
-#### Using Pre-built Image
-```bash
-# Run directly from registry
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/chat-ui.git
+   cd chat-ui
+   ```
+
+2. Create your environment file:
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` with your configuration:
+   - Set `CHAT_API_TYPE` to either 'azure' or 'local'
+   - For Azure OpenAI: Configure the Azure-specific variables
+   - For Local API: Set `LOCAL_CHAT_API_BASE_URL` (use host.docker.internal for Docker)
+
+3. Build and run with Docker:
+   ```bash
+   # Build the image
+   docker build -t chat-ui .
+
+   # Run the container
+   docker run -d \
+     --name chat-ui-app \
+     -p 8501:8501 \
+     --add-host=host.docker.internal:host-gateway \
+     --env-file .env \
+     chat-ui
+   ```
+
+4. Access the UI at `http://localhost:8501`
+
+### Option 2: Local Development
+
+1. Clone and setup:
+   ```bash
+   git clone https://github.com/yourusername/chat-ui.git
+   cd chat-ui
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+2. Configure environment:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your settings
+   ```
+
+3. Run the application:
+   ```bash
+   streamlit run src/main.py
+   ```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `CHAT_API_TYPE` | API to use ('azure' or 'local') | `azure` |
+| `LOCAL_CHAT_API_BASE_URL` | Local Chat API URL | `http://localhost:8000` |
+| `AZURE_OPENAI_ENDPOINT` | Azure OpenAI endpoint | `https://your-resource.openai.azure.com/` |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key | `your-api-key` |
+| `AZURE_OPENAI_API_VERSION` | API version | `2025-01-01-preview` |
+| `AZURE_OPENAI_DEPLOYMENT_NAME` | Model deployment name | `gpt-4` |
+
+### Docker Network Configuration
+
+When running with Docker:
+- Use `host.docker.internal` to connect to services on the host machine
+- Add `--add-host=host.docker.internal:host-gateway` for proper host resolution
+- Map port 8501 for accessing the UI: `-p 8501:8501`
+
+## Troubleshooting
+
+### Common Issues
+
+1. **API Connection Issues**
+   - Check if API type is correctly set in `.env`
+   - Verify endpoint URLs and API keys
+   - For local API, ensure host.docker.internal is properly configured
+
+2. **Docker Network Issues**
+   - Ensure the `--add-host` flag is included in docker run command
+   - Check if local services are accessible from the container
+   - Verify port mappings are correct
+
+3. **Streamlit Interface**
+   - Clear browser cache if UI changes aren't visible
+   - Check container logs for any startup errors
+   - Verify the application is running on the expected port
 docker run -d \
   --name ai-chat-assistant \
   -p 8501:8501 \
