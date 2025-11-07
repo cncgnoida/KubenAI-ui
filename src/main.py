@@ -4,6 +4,14 @@ import logging
 import sys
 from pathlib import Path
 
+# Configure Streamlit page first
+st.set_page_config(
+    page_title="Chat Bot UI",
+    page_icon="💬",
+    layout="centered",
+    initial_sidebar_state="expanded",
+)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -27,15 +35,6 @@ try:
 except Exception as e:
     logger.error(f"Error importing modules: {e}")
     raise
-
-def setup_page():
-    """Configure the Streamlit page."""
-    st.set_page_config(
-        page_title="Chat Bot UI",
-        page_icon="💬",
-        layout="centered",
-        initial_sidebar_state="expanded",
-    )
 
 def setup_sidebar():
     """Setup the sidebar with controls."""
@@ -119,9 +118,6 @@ def main():
         logger.info("Starting main application")
         st.title("🤖 AI Chat Assistant")
         st.write("Initializing...")
-
-        setup_page()
-        logger.info("Page setup complete")
 
         initialize_session_state()
         logger.info("Session state initialized")

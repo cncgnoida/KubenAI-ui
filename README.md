@@ -1,16 +1,26 @@
 # AI Chat Assistant
 
-A modern AI-powered chat interface built with Python, Streamlit, supporting both Azure OpenAI and local chat API.
+A modern AI-powered chat interface built with Python and Streamlit, featuring flexible API support for both Azure OpenAI and local chat services.
 
 ## Features
 
-- 🤖 **Dual API Support** - Works with both Azure OpenAI and local chat API
-- 🎯 **Configurable AI Behavior** - Custom system messages to define AI behavior
-- 💬 **Clean Chat Interface** - Modern, responsive design with message bubbles
-- 📝 **Conversation History** - Maintains context throughout the chat session
-- 🔒 **Secure Configuration** - Environment-based configuration management
-- ⚡ **Real-time Responses** - Fast, streaming-like experience with loading indicators
-- 🎨 **Customizable UI** - Easy to modify styling and branding
+- 🔄 **Dual API Support** 
+  - Azure OpenAI integration for production use
+  - Local Chat API support for development and testing
+  - Easy switching between APIs via environment variables
+- 🎯 **Configurable AI Behavior** 
+  - Custom system messages to define AI personality and restrictions
+  - Real-time system message updates
+  - Conversation history management
+- � **Developer-Friendly**
+  - Docker support with host network access
+  - Environment-based configuration
+  - Clear logging and error handling
+- 🎨 **Modern UI/UX**
+  - Clean, responsive Streamlit interface
+  - Real-time chat status indicators
+  - Loading states and error handling
+  - Customizable styling
 
 ![Chat UI Interface](docs/chat-ui-screenshot.png)
 
