@@ -339,3 +339,11 @@ chat-ui/
 ## License
 
 MIT
+
+##QuickRun
+
+docker build -t chat-ui . 
+docker stop chat-ui-app && docker rm chat-ui-app     
+docker run -d --name chat-ui-app -p 8501:8501 --env-file .env chat-ui
+
+ python -m streamlit run src/main.py                                     
